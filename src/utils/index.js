@@ -44,3 +44,73 @@ export function updateMatrix (matrix, columnIndex, newColumnArray) {
     matrix[i].splice(columnIndex, 1, newColumnArray[i])
   }
 }
+
+export function generateRandomMatrix (matrixType) {
+  let allNum = []
+  for (let i = 1; i < matrixType * matrixType; i++) {
+    allNum.push(i)
+  }
+  allNum.push(null)
+  
+  let randomMatrix = []
+  for (let i = 0; i < matrixType; i++) {
+    let rowArray = []
+    for (let j = 0; j < matrixType; j++) {
+      let randomIndex = Math.floor(Math.random() * allNum.length)
+      let pickNum = allNum.splice(randomIndex, 1)[0]
+      rowArray.push(pickNum)
+    }
+    randomMatrix.push(rowArray)
+  }
+  
+  return randomMatrix
+}
+
+/**
+ *
+ * @param currentMatrix :当前的矩阵
+ * @param initialMatrix :最终要完成的矩阵
+ * @returns {boolean} : 判断两个矩阵是否相等
+ */
+export function isFinish (currentMatrix, initialMatrix) {
+  for (let i = 0; i < currentMatrix.length; i++) {
+    for (let j = 0; j < currentMatrix[i].length; j++) {
+      if (currentMatrix[i][j] !== initialMatrix[i][j]) {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+export function calculatePassTime (passMilliseconds) {
+  // {hours: '00', minutes: '00', seconds: '00'}
+  let passSeconds = Math.floor(passMilliseconds / 1000)
+  let seconds = passSeconds % 60
+  let minutes = Math.floor(passSeconds / 60) % 60
+  let hours = Math.floor(passSeconds / (60 * 60))
+  
+  if (seconds <= 9) {
+    seconds = '0' + seconds
+  } else {
+    seconds = seconds.toString()
+  }
+  
+  if (minutes <= 9) {
+    minutes = '0' + minutes
+  } else {
+    minutes = minutes.toString()
+  }
+  
+  if (hours <= 9) {
+    hours = '0' + hours
+  } else {
+    hours = hours.toString()
+  }
+  
+  return {
+    hours,
+    minutes,
+    seconds
+  }
+}

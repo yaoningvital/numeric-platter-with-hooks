@@ -10,27 +10,41 @@
   justify-content: space-around;
   align-items: flex-start;
 
-  .board {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #612323;
+  .board-area {
+    .board {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #612323;
 
-    .square {
-      width: 100px;
-      height: 100px;
-      background-style: none;
-      border: none;
-      font-size: 48px;
-      font-family: Bold-num;
-      color: #8c542f;
-      text-shadow: -1px -1px #2a1a0d;
-      outline: none;
-      cursor: pointer;
+      .square {
+        width: 100px;
+        height: 100px;
+        background-style: none;
+        border: none;
+        font-size: 48px;
+        font-family: Bold-num;
+        color: #8c542f;
+        text-shadow: -1px -1px #2a1a0d;
+        outline: none;
+        cursor: pointer;
+      }
+    }
+
+    .begin-btn {
+      width: 200px;
+      height: 80px;
+      display: block;
+      margin: 50px auto;
+      font-size: 40px;
+      background-image: linear-gradient(#f3c98f, #e5b97c);
+      //color: #79421e;
+      outline: 0;
     }
   }
+
 
   .operation-area {
     .select-types {
@@ -40,6 +54,13 @@
         height: 40px;
         margin-bottom: 5px;
         outline: none;
+        font-size: 20px;
+      }
+    }
+
+    .game-status {
+      p.game-result {
+        font-size: 30px;
       }
     }
   }
