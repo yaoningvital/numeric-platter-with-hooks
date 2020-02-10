@@ -34,12 +34,12 @@ export function getColumnArray (matrix, columnIndex) {
 }
 
 /**
- *
+ * 更新矩阵的某一列的数字
  * @param matrix : 要修改的矩阵
  * @param columnIndex : 要修改数字的列
  * @param newColumnArray : 这一列上的新的数字
  */
-export function updateMatrix (matrix, columnIndex, newColumnArray) {
+export function updateColumnOfMatrix (matrix, columnIndex, newColumnArray) {
   for (let i = 0; i < matrix.length; i++) {
     matrix[i].splice(columnIndex, 1, newColumnArray[i])
   }
@@ -114,3 +114,4 @@ export function calculatePassTime (passMilliseconds) {
     seconds
   }
 }
+

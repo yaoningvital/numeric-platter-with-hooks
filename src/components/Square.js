@@ -1,7 +1,7 @@
 import React from 'react'
 
 function Square (props) {
-  let {value, index, gapWidth, move} = props
+  let {value, index, gapWidth, handleMove} = props
   let backgroundColor = value ? '#e5b97c' : 'transparent'
   let backgroundImage = value ? 'linear-gradient(#f3c98f, #e5b97c)' : 'none'
   let boxShadow = value ? '-1px -1px 1px #fff' : 'none'
@@ -13,7 +13,7 @@ function Square (props) {
               backgroundImage: backgroundImage,
               boxShadow: boxShadow
             }}
-            onClick={() => move(value, index)}
+            onClick={() => handleMove(value, index)}
     >{value}</button>
   )
 }

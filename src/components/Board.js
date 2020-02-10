@@ -2,7 +2,7 @@ import React from 'react'
 import Square from './Square'
 
 function Board (props) {
-  let {matrixType, matrix, gapWidth, move} = props
+  let {matrixType, matrix, gapWidth, handleMove} = props
   return (
     <div className="board"
          style={{
@@ -17,7 +17,7 @@ function Board (props) {
                     value={num}
                     index={[rowIndex,columnIndex]}
                     gapWidth={gapWidth}
-                    move={move}
+                    handleMove={handleMove}
             />
           ))
         })

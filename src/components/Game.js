@@ -3,14 +3,7 @@ import Board from './Board'
 import StartGameBtn from './StartGameBtn'
 import GameStatus from './GameStatus'
 import SelectType from "./SelectType";
-import {
-  calculatePassTime,
-  generateInitialMatrix,
-  generateRandomMatrix,
-  getColumnArray,
-  isFinish,
-  updateMatrix
-} from '../utils'
+import { calculatePassTime, generateInitialMatrix, getColumnArray, isFinish, updateColumnOfMatrix } from '../utils'
 import _ from 'lodash'
 
 function Game () {
@@ -33,9 +26,19 @@ function Game () {
     setPassTime(initialPassTime)
   }
   
-  function move (value, index) {
+  // 点击了一个数字
+  function handleMove (value, index) {
+    if (gameStatus === 'notBegin' || gameStatus === 'finish') return
     if (value === null) return
-    let newMatrix = _.cloneDeep(matrix)
+    let newMatrix = generateNewMatrix(value, index, matrix)
+    setMatrix(newMatrix)
+    hasFinished(newMatrix)
+  }
+  
+  function generateNewMatrix (value, index, oldMatrix) {
+    if (value === null) return oldMatrix
+    
+    let newMatrix = _.cloneDeep(oldMatrix)
     
     let [rowIndex, columnIndex] = index
     let rowArray = newMatrix[rowIndex] // 点击数字所在的行
@@ -53,10 +56,12 @@ function Game () {
       let nullIndex = columnArray.indexOf(null) // 空格所在的索引
       columnArray.splice(nullIndex, 1)
       columnArray.splice(rowIndex, 0, null)
-      updateMatrix(newMatrix, columnIndex, columnArray)
+      updateColumnOfMatrix(newMatrix, columnIndex, columnArray)
     }
-    setMatrix(newMatrix)
-    
+    return newMatrix
+  }
+  
+  function hasFinished (newMatrix) {
     if (isFinish(newMatrix, initialMatrix)) {
       // alert('通关了')
       setGameStatus('finish')
@@ -67,10 +72,12 @@ function Game () {
   function startGame () {
     // 1、gameStatus变为 begin
     setGameStatus('begin')
-    // 2、生成一个顺序随机的矩阵
-    let randomMatrix = generateRandomMatrix(matrixType)
-    console.log(randomMatrix)
-    setMatrix(randomMatrix)
+    
+    // 2、生成一个顺序被自动打乱的矩阵
+    let disorderedMatrix = generateDisorderedMatrix()
+    // console.log('disorderedMatrix:', disorderedMatrix)
+    setMatrix(disorderedMatrix)
+    
     // 3、开始计时
     let beginTime = Date.now()
     clearInterval(timer)
@@ -83,13 +90,47 @@ function Game () {
     setTimer(t)
   }
   
+  // 生成一个顺序被自动打乱的矩阵
+  function generateDisorderedMatrix () {
+    let moveTimes = 200 // 自动移动的次数
+    let disorderedMatrix = _.cloneDeep(initialMatrix)
+    for (let i = 0; i < moveTimes; i++) {
+      // console.log('i:', i)
+      disorderedMatrix = autoMove(disorderedMatrix)
+    }
+    
+    return disorderedMatrix
+    
+  }
+  
+  function autoMove (oldMatrix) {
+    // console.log('oldMatrix:', oldMatrix)
+    let totalNum = matrixType * matrixType
+    let randomIndex = Math.floor(Math.random() * totalNum)
+    let value = null
+    let index = []
+    for (let i = 0; i < oldMatrix.length; i++) {
+      for (let j = 0; j < oldMatrix[i].length; j++) {
+        if (i * matrixType + j === randomIndex) {
+          value = oldMatrix[i][j]
+          index = [i, j]
+          break
+        }
+      }
+      if (index.length > 0) {
+        break
+      }
+    }
+    return generateNewMatrix(value, index, oldMatrix)
+  }
+  
   return (
     <div className="game">
       <div className="board-area">
         <Board matrixType={matrixType}
                matrix={matrix}
                gapWidth={gapWidth}
-               move={move}
+               handleMove={handleMove}
         />
         <StartGameBtn gameStatus={gameStatus}
                       startGame={startGame}
