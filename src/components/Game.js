@@ -106,12 +106,35 @@ function Game () {
   function autoMove (oldMatrix) {
     // console.log('oldMatrix:', oldMatrix)
     let totalNum = matrixType * matrixType
-    let randomIndex = Math.floor(Math.random() * totalNum)
-    let value = null
+    
+    let nullIndex = [] // 空格所在的索引
+    for (let i = 0; i < oldMatrix.length; i++) {
+      for (let j = 0; j < oldMatrix[i].length; j++) {
+        if (oldMatrix[i][j] === null) {
+          nullIndex = [i, j]
+        }
+      }
+    }
+    
+    let canMoveIndices = [] // 可以移动的数字所在的索引
+    for (let i = 0; i < oldMatrix.length; i++) {
+      for (let j = 0; j < oldMatrix[i].length; j++) {
+        let canMoveIndex = i * oldMatrix.length + j
+        if (i === nullIndex[0] && oldMatrix[i][j] !== null) { // 找到空格所在的行
+          canMoveIndices.push(canMoveIndex)
+        }
+        if (j === nullIndex[1] && oldMatrix[i][j] !== null) { // 空格所在的列
+          canMoveIndices.push(canMoveIndex)
+        }
+      }
+    }
+    
+    let randomIndex = canMoveIndices[Math.floor(Math.random() * canMoveIndices.length)]
+    let value = []
     let index = []
     for (let i = 0; i < oldMatrix.length; i++) {
       for (let j = 0; j < oldMatrix[i].length; j++) {
-        if (i * matrixType + j === randomIndex) {
+        if (i * oldMatrix.length + j === randomIndex) {
           value = oldMatrix[i][j]
           index = [i, j]
           break
