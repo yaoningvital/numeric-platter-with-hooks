@@ -1,25 +1,37 @@
 import React, { useState } from 'react'
 import Board from './Board'
 import StartGameBtn from './StartGameBtn'
-import GameStatus from './GameStatus'
-import SelectType from "./SelectType";
-import { calculatePassTime, generateInitialMatrix, getColumnArray, isFinish, updateColumnOfMatrix } from '../utils'
+import UseTime from './UseTime'
+import {
+  generateInitialMatrix,
+  getColumnArray,
+  isFinish,
+  milliSecondsToShowPattern,
+  updateColumnOfMatrix
+} from '../utils'
 import _ from 'lodash'
+import SelectGameType from './SelectGameType'
+import Finish from './Finish'
+
 
 function Game () {
+  const [showModal, setShowModal] = useState(true)
   const [matrixType, setMatrixType] = useState(5) // 矩阵是几乘几的
   const [gapWidth, setGapWidth] = useState(5) // 格子之间间隙的宽度
   const allTypes = [3, 4, 5, 6, 7, 8] // 所有的矩阵类型
   const initialPassTime = {hours: '00', minutes: '00', seconds: '00'}
   const [gameStatus, setGameStatus] = useState('notBegin') // 游戏状态： notBegin、begin、finish
-  const [passTime, setPassTime] = useState(initialPassTime) // 游戏耗时
+  const [passTime, setPassTime] = useState(initialPassTime) // 游戏耗时 格式：{hours: '00', minutes: '00', seconds: '00'}
+  const [useMilliSeconds, setUseMilliSeconds] = useState(0) // 游戏耗时 毫秒格式
   const [timer, setTimer] = useState(null)
   
   let initialMatrix = generateInitialMatrix(matrixType) // 初始的数字布局
   const [matrix, setMatrix] = useState(initialMatrix) // 当前数字布局
+  const [showFinishModal, setShowFinishModal] = useState(false)
   
-  
+  // 处理选择游戏类型
   function handleSelectType (matrixType) {
+    setShowModal(false)
     setMatrixType(matrixType)
     setMatrix(generateInitialMatrix(matrixType))
     setGameStatus('notBegin')
@@ -35,6 +47,7 @@ function Game () {
     hasFinished(newMatrix)
   }
   
+  // 根据点击的数字的值 和 其所在的行列索引，将原来的矩阵更新为一个 新的矩阵
   function generateNewMatrix (value, index, oldMatrix) {
     if (value === null) return oldMatrix
     
@@ -61,14 +74,29 @@ function Game () {
     return newMatrix
   }
   
+  // 判断矩阵是否复原了
   function hasFinished (newMatrix) {
     if (isFinish(newMatrix, initialMatrix)) {
       // alert('通关了')
       setGameStatus('finish')
       clearInterval(timer)
+      
+      // 历史最短用时
+      let historyShortestUseTime = window.localStorage.getItem('historyShortestTimeByMilliSeconds-' + matrixType)
+      if (historyShortestUseTime) {
+        if (+historyShortestUseTime > useMilliSeconds) {
+          window.localStorage.setItem('historyShortestTimeByMilliSeconds-' + matrixType, useMilliSeconds)
+        }
+      } else {
+        window.localStorage.setItem('historyShortestTimeByMilliSeconds-' + matrixType, useMilliSeconds)
+      }
+      
+      setShowFinishModal(true)
+      
     }
   }
   
+  // 点击“开始游戏”按钮
   function startGame () {
     // 1、gameStatus变为 begin
     setGameStatus('begin')
@@ -83,8 +111,10 @@ function Game () {
     clearInterval(timer)
     let t = setInterval(() => {
       let currentTime = Date.now()
-      let newPassTime = calculatePassTime(currentTime - beginTime)
+      let passMilliSeconds = currentTime - beginTime
+      let newPassTime = milliSecondsToShowPattern(passMilliSeconds)
       setPassTime(newPassTime)
+      setUseMilliSeconds(passMilliSeconds)
     }, 1000)
     
     setTimer(t)
@@ -103,6 +133,7 @@ function Game () {
     
   }
   
+  // 自动移动一格数字
   function autoMove (oldMatrix) {
     // console.log('oldMatrix:', oldMatrix)
     // let totalNum = matrixType * matrixType
@@ -147,31 +178,52 @@ function Game () {
     return generateNewMatrix(value, index, oldMatrix)
   }
   
+  
+  // 关闭完成的提示层
+  function closeFinishMask () {
+    setShowFinishModal(false)
+    setPassTime(initialPassTime)
+  }
+  
   return (
     <div className="game">
-      <div className="board-area">
-        <Board matrixType={matrixType}
-               matrix={matrix}
-               gapWidth={gapWidth}
-               handleMove={handleMove}
-        />
-        <StartGameBtn gameStatus={gameStatus}
-                      startGame={startGame}
-        />
-      </div>
+      <SelectGameType showModal={showModal}
+                      allTypes={allTypes}
+                      gameStatus={gameStatus}
+                      handleSelectType={handleSelectType}
+      />
+      {/*游戏状态*/}
+      <UseTime gameStatus={gameStatus}
+               passTime={passTime}
+      >已用时</UseTime>
+      <button className="select-type-btn"
+              onClick={() => setShowModal(true)}
+              disabled={gameStatus === 'begin'}
+      >选择类型
+      </button>
+      {/*通关了，已用时*/}
+      <Finish showFinishModal={showFinishModal}
+              passTime={passTime}
+              closeFinishMask={closeFinishMask}
+              matrixType={matrixType}
+      />
       
-      <div className="operation-area">
-        {/*选择类型*/}
-        <SelectType allTypes={allTypes}
-                    gameStatus={gameStatus}
-                    handleSelectType={handleSelectType}
-        />
-        {/*游戏状态*/}
-        <GameStatus gameStatus={gameStatus}
-                    passTime={passTime}
-        />
+      <Board matrixType={matrixType}
+             matrix={matrix}
+             gapWidth={gapWidth}
+             handleMove={handleMove}
+      />
+      <StartGameBtn gameStatus={gameStatus}
+                    startGame={startGame}
+      />
       
-      </div>
+      {/*<div className="operation-area">*/}
+      {/*  /!*选择类型*!/*/}
+      {/*  <SelectType allTypes={allTypes}*/}
+      {/*              gameStatus={gameStatus}*/}
+      {/*              handleSelectType={handleSelectType}*/}
+      {/*  />*/}
+      {/*</div>*/}
     </div>
   )
 }

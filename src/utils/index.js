@@ -83,7 +83,7 @@ export function isFinish (currentMatrix, initialMatrix) {
   return true
 }
 
-export function calculatePassTime (passMilliseconds) {
+export function milliSecondsToShowPattern (passMilliseconds) {
   // {hours: '00', minutes: '00', seconds: '00'}
   let passSeconds = Math.floor(passMilliseconds / 1000)
   let seconds = passSeconds % 60

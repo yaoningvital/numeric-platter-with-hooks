@@ -6,9 +6,9 @@ function Board (props) {
   return (
     <div className="board"
          style={{
-           width: (matrixType * 100 + (matrixType - 1) * gapWidth) + 'px',
-           height: (matrixType * 100 + (matrixType - 1) * gapWidth) + 'px',
-           padding: gapWidth + 'px'
+           // width: (matrixType * 100 + (matrixType - 1) * gapWidth) + 'px',
+           // height: (matrixType * 100 + (matrixType - 1) * gapWidth) + 'px',
+           // padding: gapWidth + 'px'
          }}>
       {
         matrix.map((rowArray,rowIndex) => {
@@ -17,6 +17,7 @@ function Board (props) {
                     value={num}
                     index={[rowIndex,columnIndex]}
                     gapWidth={gapWidth}
+                    matrixType={matrixType}
                     handleMove={handleMove}
             />
           ))
