@@ -92,7 +92,7 @@ function Game () {
   
   // 生成一个顺序被自动打乱的矩阵
   function generateDisorderedMatrix () {
-    let moveTimes = 200 // 自动移动的次数
+    let moveTimes = matrixType * 100 // 自动移动的次数
     let disorderedMatrix = _.cloneDeep(initialMatrix)
     for (let i = 0; i < moveTimes; i++) {
       // console.log('i:', i)
@@ -105,7 +105,7 @@ function Game () {
   
   function autoMove (oldMatrix) {
     // console.log('oldMatrix:', oldMatrix)
-    let totalNum = matrixType * matrixType
+    // let totalNum = matrixType * matrixType
     
     let nullIndex = [] // 空格所在的索引
     for (let i = 0; i < oldMatrix.length; i++) {
