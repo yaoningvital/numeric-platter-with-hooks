@@ -17,7 +17,7 @@ import Finish from './Finish'
 function Game () {
   const [showModal, setShowModal] = useState(true)
   const [matrixType, setMatrixType] = useState(5) // 矩阵是几乘几的
-  const [gapWidth, setGapWidth] = useState(5) // 格子之间间隙的宽度
+  const [gapWidth] = useState(5) // 格子之间间隙的宽度
   const allTypes = [3, 4, 5, 6, 7, 8] // 所有的矩阵类型
   const initialPassTime = {hours: '00', minutes: '00', seconds: '00'}
   const [gameStatus, setGameStatus] = useState('notBegin') // 游戏状态： notBegin、begin、finish
@@ -216,14 +216,6 @@ function Game () {
       <StartGameBtn gameStatus={gameStatus}
                     startGame={startGame}
       />
-      
-      {/*<div className="operation-area">*/}
-      {/*  /!*选择类型*!/*/}
-      {/*  <SelectType allTypes={allTypes}*/}
-      {/*              gameStatus={gameStatus}*/}
-      {/*              handleSelectType={handleSelectType}*/}
-      {/*  />*/}
-      {/*</div>*/}
     </div>
   )
 }

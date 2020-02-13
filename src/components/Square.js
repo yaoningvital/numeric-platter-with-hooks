@@ -1,7 +1,7 @@
 import React from 'react'
 
 function Square (props) {
-  let {value, index, gapWidth, matrixType, handleMove} = props
+  let {value, index, matrixType, handleMove} = props
   let clientWidth = document.body.clientWidth
   let width = clientWidth * 0.9 / matrixType + 'px'
   let backgroundColor = value ? '#e5b97c' : 'transparent'
@@ -13,7 +13,6 @@ function Square (props) {
             style={{
               width: width,
               height: width,
-              // marginBottom: gapWidth + 'px',
               backgroundColor: backgroundColor,
               backgroundImage: backgroundImage,
               boxShadow: boxShadow,

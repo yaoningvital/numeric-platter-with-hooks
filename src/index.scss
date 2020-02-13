@@ -3,10 +3,8 @@
   src: url("./static/fonts/impact.ttf");
 }
 
-//@media (-webkit-min-device-pixel-ratio: 2) and (-webkit-min-device-pixel-ratio: 3), (min-resolution: 2dppx) and (min-resolution: 3dppx)
 
 html:not([data-scale]) .am-modal-button-group-v .am-modal-button::before {
-  //transform: scaleY(0.33);
   height: 0;
 }
 
@@ -35,7 +33,7 @@ html:not([data-scale]) .am-modal-button-group-v .am-modal-button::before {
           button {
             display: block;
             width: 200px;
-            height: 80px;
+            height: 70px;
             margin-bottom: 20px;
             outline: none;
             font-size: 30px;
