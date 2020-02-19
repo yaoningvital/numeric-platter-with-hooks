@@ -1,7 +1,7 @@
 import React from 'react'
 
 function Square (props) {
-  let {value, index, matrixType, handleMove} = props
+  let {value, index, matrixType, handleClick, handleTouchStart, handleTouchMove, handleTouchEnd} = props
   let clientWidth = document.body.clientWidth
   let width = clientWidth * 0.9 / matrixType + 'px'
   let backgroundColor = value ? '#e5b97c' : 'transparent'
@@ -18,7 +18,10 @@ function Square (props) {
               boxShadow: boxShadow,
               fontSize: fontSize
             }}
-            onClick={() => handleMove(value, index)}
+            onClick={() => handleClick(value, index)}
+            onTouchStart={(e) => handleTouchStart(e, value, index)}
+            onTouchMove={(e) => handleTouchMove(e, value, index)}
+            onTouchEnd={() => handleTouchEnd(value, index)}
     >{value}</button>
   )
 }

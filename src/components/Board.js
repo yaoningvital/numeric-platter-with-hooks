@@ -2,7 +2,7 @@ import React from 'react'
 import Square from './Square'
 
 function Board (props) {
-  let {matrixType, matrix, gapWidth, handleMove} = props
+  let {matrixType, matrix, gapWidth, handleClick, handleTouchStart, handleTouchMove, handleTouchEnd} = props
   return (
     <div className="board"
          style={{
@@ -11,14 +11,17 @@ function Board (props) {
            // padding: gapWidth + 'px'
          }}>
       {
-        matrix.map((rowArray,rowIndex) => {
-          return rowArray.map((num,columnIndex) => (
+        matrix.map((rowArray, rowIndex) => {
+          return rowArray.map((num, columnIndex) => (
             <Square key={num}
                     value={num}
-                    index={[rowIndex,columnIndex]}
+                    index={[rowIndex, columnIndex]}
                     gapWidth={gapWidth}
                     matrixType={matrixType}
-                    handleMove={handleMove}
+                    handleClick={handleClick}
+                    handleTouchStart={handleTouchStart}
+                    handleTouchMove={handleTouchMove}
+                    handleTouchEnd={handleTouchEnd}
             />
           ))
         })

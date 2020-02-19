@@ -24,6 +24,8 @@ function Game () {
   const [passTime, setPassTime] = useState(initialPassTime) // 游戏耗时 格式：{hours: '00', minutes: '00', seconds: '00'}
   const [useMilliSeconds, setUseMilliSeconds] = useState(0) // 游戏耗时 毫秒格式
   const [timer, setTimer] = useState(null)
+  const [startPos, setStartPos] = useState({pageX: 0, pageY: 0}) // 触摸开始位置
+  const [moveToPos, setMoveToPos] = useState({pageX: 0, pageY: 0}) // 触摸移动时的位置
   
   let initialMatrix = generateInitialMatrix(matrixType) // 初始的数字布局
   const [matrix, setMatrix] = useState(initialMatrix) // 当前数字布局
@@ -39,7 +41,7 @@ function Game () {
   }
   
   // 点击了一个数字
-  function handleMove (value, index) {
+  function handleClick (value, index) {
     if (gameStatus === 'notBegin' || gameStatus === 'finish') return
     if (value === null) return
     let newMatrix = generateNewMatrix(value, index, matrix)
@@ -178,11 +180,105 @@ function Game () {
     return generateNewMatrix(value, index, oldMatrix)
   }
   
-  
   // 关闭完成的提示层
   function closeFinishMask () {
     setShowFinishModal(false)
     setPassTime(initialPassTime)
+  }
+  
+  function handleTouchStart (e, value, index) {
+    if (gameStatus === 'notBegin' || gameStatus === 'finish') return
+    if (value === null) return
+    setStartPos({
+      pageX: e.targetTouches[0].pageX,
+      pageY: e.targetTouches[0].pageY
+    })
+  }
+  
+  function handleTouchMove (e, value, index) {
+    if (gameStatus === 'notBegin' || gameStatus === 'finish') return
+    setMoveToPos({
+      pageX: e.targetTouches[0].pageX,
+      pageY: e.targetTouches[0].pageY,
+    })
+  }
+  
+  function handleTouchEnd (value, index) {
+    if (gameStatus === 'notBegin' || gameStatus === 'finish') return
+    
+    let xDistance = startPos.pageX - moveToPos.pageX
+    let yDistance = startPos.pageY - moveToPos.pageY
+    let moveAxis = Math.abs(xDistance) > Math.abs(yDistance) ? 'horizontal' : 'vertical'
+    
+    let moveDirection = null
+    if (moveAxis === 'horizontal') {
+      if (xDistance > 10) {
+        moveDirection = 'left'
+        // console.log('向左移')
+      } else if (xDistance < -10) {
+        moveDirection = 'right'
+        // console.log('向右移')
+      }
+    } else if (moveAxis === 'vertical') {
+      if (yDistance > 10) {
+        moveDirection = 'top'
+        // console.log('向上移')
+      } else if (yDistance < -10) {
+        moveDirection = 'bottom'
+        // console.log('向下移')
+      }
+    }
+    
+    if (moveDirection) {
+      let newMatrix = generateNewMatrixBySlide(value, index, matrix, moveDirection)
+      setMatrix(newMatrix)
+      hasFinished(newMatrix)
+    }
+  }
+  
+  /**
+   * @return 返回滑动后的数字布局
+   * value: 滑动数字的值
+   * index: 滑动数字所在的索引
+   * oldMatrix: 滑动前的数字布局
+   * moveDirection: 滑动的方向
+   */
+  function generateNewMatrixBySlide (value, index, oldMatrix, moveDirection) {
+    let newMatrix = _.cloneDeep(oldMatrix)
+    
+    let [rowIndex, columnIndex] = index
+    let rowArray = newMatrix[rowIndex] // 滑动数字所在的行
+    let columnArray = getColumnArray(newMatrix, columnIndex) // 滑动数字所在的列的数字 组成的数组
+    
+    if (moveDirection === 'left') {
+      if (rowArray.slice(0, columnIndex).includes(null)) { // 滑动数字的左边有空格，可以往左边移动
+        let nullIndex = rowArray.indexOf(null) // 空格所在的索引
+        rowArray.splice(nullIndex, 1)
+        rowArray.splice(columnIndex, 0, null)
+      }
+    } else if (moveDirection === 'right') {
+      if (rowArray.slice(columnIndex, matrixType).includes(null)) { // 滑动数字的右边有空格，可以往右边移动
+        let nullIndex = rowArray.indexOf(null) // 空格所在的索引
+        rowArray.splice(nullIndex, 1)
+        rowArray.splice(columnIndex, 0, null)
+      }
+    } else if (moveDirection === 'top') {
+      if (columnArray.slice(0, rowIndex).includes(null)) { // 滑动数字的上边有空格，可以往上边移动
+        let nullIndex = columnArray.indexOf(null) // 空格所在的索引
+        columnArray.splice(nullIndex, 1)
+        columnArray.splice(rowIndex, 0, null)
+        updateColumnOfMatrix(newMatrix, columnIndex, columnArray)
+      }
+    } else if (moveDirection === 'bottom') {
+      if (columnArray.slice(rowIndex, matrixType).includes(null)) { // 滑动数字的下边有空格，可以往下边移动
+        let nullIndex = columnArray.indexOf(null) // 空格所在的索引
+        columnArray.splice(nullIndex, 1)
+        columnArray.splice(rowIndex, 0, null)
+        updateColumnOfMatrix(newMatrix, columnIndex, columnArray)
+      }
+    }
+    
+    return newMatrix
   }
   
   return (
@@ -211,7 +307,10 @@ function Game () {
       <Board matrixType={matrixType}
              matrix={matrix}
              gapWidth={gapWidth}
-             handleMove={handleMove}
+             handleClick={handleClick}
+             handleTouchStart={handleTouchStart}
+             handleTouchMove={handleTouchMove}
+             handleTouchEnd={handleTouchEnd}
       />
       <StartGameBtn gameStatus={gameStatus}
                     startGame={startGame}
